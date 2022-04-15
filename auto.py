@@ -82,11 +82,8 @@ while True:
         end_time = start_time + datetime.timedelta(hours=3, minutes=50)
         while True:
             now = datetime.datetime.now()
-            print(start_time, end_time, now)
-            print(buy_tickers)
             if start_time < now < end_time:
                 for tickers in KRW_tickers:
-                    print("{} 매수 조건 검색중".format(tickers))
                     balance = upbit.get_balance(tickers[tickers.index("-") +1:])
                     ticker_balance = balance * get_current_price(tickers)
                     target_price = get_target_price(tickers, k)
@@ -106,14 +103,12 @@ while True:
                         time.sleep(0.1)
             elif end_time + datetime.timedelta(minutes=5) > now > end_time :
                 for tickers in KRW_tickers:
-                    print("{} 매도 준비중".format(tickers))
                     balance = upbit.get_balance(tickers[tickers.index("-") +1:])
                     ticker_balance = balance * get_current_price(tickers)
                     if ticker_balance > 5000:
                         sell_order(tickers, balance, ticker_balance)
                     time.sleep(0.1)
             else :
-                print ("1사이클 완료")
                 time.sleep(1)
                 break
 
