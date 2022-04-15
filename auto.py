@@ -78,20 +78,6 @@ def sell_order(ticker, price, sell_price):
 while True:
     try:
         buy_tickers = []
-        # for tickers in KRW_tickers:
-            # ma5 = get_yesterday_ma5(tickers)
-            # df1 = pyupbit.get_ohlcv(tickers, interval="minute240", count=1)
-            # open_price = df1.iloc[0]['open']
-            # print(tickers, open_price, ma5)
-            # if open_price > ma5:
-            #     bid_tickers.append(tickers)
-            # balance = upbit.get_balance(tickers[tickers.index("-")+1:])
-            # ticker_balance = balance * get_current_price(tickers)
-            # if ticker_balance > 5000:
-            #     buy_tickers.append(tickers)
-            #     if tickers not in bid_tickers:
-            #         bid_tickers.append(tickers)
-            # time.sleep(0.1)
         start_time = get_start_time("KRW-BTC") + datetime.timedelta(minutes=5)
         end_time = start_time + datetime.timedelta(hours=3, minutes=50)
         while True:
