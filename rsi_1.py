@@ -1,4 +1,3 @@
-from re import I
 import time
 import pyupbit
 import datetime
@@ -10,7 +9,7 @@ access = 'a'
 secret = 'b'
 myToken = "xoxb-c"
 
-bid_price = 1000
+bid_price = 10000
 KRW_tickers = pyupbit.get_tickers(fiat="KRW")
 period = 14
 
@@ -41,7 +40,7 @@ def get_balance(ticker):
 
 # 시작 시간
 def get_start_time(ticker):
-    df = pyupbit.get_ohlcv(ticker, interval="minute240", count=1)
+    df = pyupbit.get_ohlcv(ticker, interval="minute30", count=1)
     start_time = df.index[0]
     return start_time
 
@@ -67,11 +66,11 @@ def sell_order(ticker, price, sell_price, rsi):
 # 자동매매 시작
 while True:
     try:
-        start_time = get_start_time("KRW-BTC") + datetime.timedelta(hours=4, minutes=0.5)
-        end_time = start_time + datetime.timedelta(minutes=1.5)
+        start_time = get_start_time("KRW-BTC") + datetime.timedelta(minutes=0.1)
+        end_time = start_time + datetime.timedelta(minutes=1)
         now = datetime.datetime.now()
         print(start_time, end_time, now)
-        time.sleep(30)
+        time.sleep(1)
         if start_time < now < end_time:
             post_message(myToken,"#aleart", "거래조건 검색중")
             for tickers in KRW_tickers:
@@ -88,31 +87,19 @@ while True:
                 df['RS'] = df['au'] / df['ad']
                 df['RSI'] = pd.Series(100 - (100 / (1 + df['RS'])))
                 
-                rsi_d = df['RSI'][-1:]
-                rsi_d1 = df['RSI'][-2:-1]
+                rsi_d = df['RSI'][-2:]
+                rsi_d1 = df['RSI'][-3:-2]
 
-                if rsi_d <= 30 and rsi_d < rsi_d1:
-                    buy_order(tickers, bid_price, rsi_d)
+                if rsi_d.values <= 30 and rsi_d.values < rsi_d1.values:
+                    buy_order(tickers, bid_price, rsi_d.values)
 
-                if rsi_d <= 50 and rsi_d1 > 50:
-                    i = 1
-                    while True:
-                        i += 1
-                        rsi = df['RSI'][-i:-i+1]
-                        time.sleep(0.1)
-                        if rsi.values >= 70:
-                            buy_order(tickers, bid_price, rsi_d)
-                            break
-                        elif rsi.values <= 50:
-                            break
-
-                if rsi_d <= 70 and rsi_d1 >= 70:
+                elif rsi_d1.values >= 70 and rsi_d.values < rsi_d1.values:
                     ticker_balance = balance * get_current_price(tickers)
                     if ticker_balance >= 5000:
-                        sell_order(tickers, balance, ticker_balance, rsi_d)
+                        sell_order(tickers, balance, ticker_balance, rsi_d.values)
                 time.sleep(1)
 
     except Exception as e:
         print(e)
         post_message(myToken,"#aleart", e)
-        time.sleep(10)
+        time.sleep(1)
